@@ -24,3 +24,4 @@ This document stores helpful prompts to use with ChatGPT while developing and im
 ### ✅ AnimeDetailPage
 - *Write me AnimeDetailPage that call "https://api.jikan.moe/v4/anime/:id" when loaded
 - *Split out the fetch into service file
+- *Add max-width and max-height for photo
