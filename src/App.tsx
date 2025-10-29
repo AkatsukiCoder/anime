@@ -1,13 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AnimePage from "./pages/AnimePage";
-import Layout from "./layouts/Layout";
+import Layout from "./components/Layout";
+import AnimeDetailPage from "./pages/AnimeDetailPage";
+
 function App() {
   return (
     <Router>
       <Layout>
-        <Routes>
-          <Route path="/" element={<AnimePage />} />
-        </Routes>
+        {({ searchTerm }) => (
+          <Routes>
+            <Route path="/" element={<AnimePage searchTerm={searchTerm} />} />
+            <Route path="/anime/:id" element={<AnimeDetailPage />} />
+          </Routes>
+        )}
       </Layout>
     </Router>
   );
