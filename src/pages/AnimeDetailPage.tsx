@@ -2,13 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import { fetchAnimeDetail } from "../services/anime.service";
-
-type AnimeDetail = {
-  mal_id: number;
-  title: string;
-  images: { jpg: { image_url: string } };
-  synopsis: string;
-};
+import type { AnimeDetail } from "../types/anime";
 
 function AnimeDetailPage() {
   const { id } = useParams();

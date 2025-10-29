@@ -13,3 +13,10 @@ export type ApiResponse = {
     has_next_page: boolean;
   };
 };
+
+export type AnimeDetail = {
+  mal_id: number;
+  title: string;
+  images: { jpg: { image_url: string } };
+  synopsis: string;
+};
