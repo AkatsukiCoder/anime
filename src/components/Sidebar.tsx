@@ -1,20 +1,37 @@
 import { useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { RootState } from "../app/store";
+import { setSearchTerm } from "../features/search/searchSlice";
+import { ROUTES } from "../routes";
 
 type SidebarProps = {
   open: boolean;
   onClose: () => void;
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
 };
 
-function Sidebar({ open, onClose, searchTerm, setSearchTerm }: SidebarProps) {
+function Sidebar({ open, onClose }: SidebarProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const searchTerm = useSelector((state: RootState) => state.search.term);
 
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
   }, [open]);
+
+  const handleSearch = (value: string) => {
+    dispatch(setSearchTerm(value));
+
+    // ✅ If currently on detail page, redirect to main Anime page
+    if (location.pathname !== ROUTES.HOME) {
+      navigate(ROUTES.HOME);
+    }
+  };
 
   return (
     <div
@@ -31,7 +48,7 @@ function Sidebar({ open, onClose, searchTerm, setSearchTerm }: SidebarProps) {
           placeholder="Search Anime..."
           className="w-full p-2 border border-gray-300 rounded"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
         />
 
         <button

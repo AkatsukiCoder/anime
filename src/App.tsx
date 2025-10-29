@@ -1,20 +1,19 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AnimePage from "./pages/AnimePage";
-import Layout from "./components/Layout";
 import AnimeDetailPage from "./pages/AnimeDetailPage";
+import Layout from "./components/Layout";
+import { ROUTES } from "./routes";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Layout>
-        {({ searchTerm }) => (
-          <Routes>
-            <Route path="/" element={<AnimePage searchTerm={searchTerm} />} />
-            <Route path="/anime/:id" element={<AnimeDetailPage />} />
-          </Routes>
-        )}
+        <Routes>
+          <Route path={ROUTES.HOME} element={<AnimePage />} />
+          <Route path={ROUTES.ANIME_DETAIL} element={<AnimeDetailPage />} />
+        </Routes>
       </Layout>
-    </Router>
+    </BrowserRouter>
   );
 }
 

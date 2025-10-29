@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../app/store";
 import Loader from "../components/Loader";
 import type { Anime } from "../types/anime";
 import { fetchAnime } from "../services/anime.service";
 import { Link } from "react-router-dom";
 
-type AnimePageProps = {
-  searchTerm: string;
-};
+function AnimePage() {
+  const searchTerm = useSelector((state: RootState) => state.search.term);
 
-function AnimePage({ searchTerm }: AnimePageProps) {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,14 +27,11 @@ function AnimePage({ searchTerm }: AnimePageProps) {
     try {
       const res = await fetchAnime(pageNum, "end_date", "desc", query, signal);
 
-      setAnimeList(prev => {
+      setAnimeList((prev) => {
         const combined = pageNum === 1 ? res.data : [...prev, ...res.data];
-
-        // Deduplicate by mal_id
         const deduped = combined.filter(
-          (a, i) => combined.findIndex(v => v.mal_id === a.mal_id) === i
+          (a, i) => combined.findIndex((v) => v.mal_id === a.mal_id) === i
         );
-
         return deduped;
       });
 
@@ -42,14 +39,13 @@ function AnimePage({ searchTerm }: AnimePageProps) {
       if (pageNum === 1) setFirstPageLoaded(true);
     } catch (err: any) {
       if (err.name !== "AbortError") {
-        setError(err instanceof Error ? err.message : "Unknown error");
+        setError(err.message || "Unknown error");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Debounce search refresh
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
@@ -69,7 +65,6 @@ function AnimePage({ searchTerm }: AnimePageProps) {
     };
   }, [searchTerm]);
 
-  // Pagination for page > 1
   useEffect(() => {
     if (page === 1) return;
 
@@ -78,18 +73,14 @@ function AnimePage({ searchTerm }: AnimePageProps) {
     return () => controller.abort();
   }, [page]);
 
-  // Infinite scroll observer
   useEffect(() => {
     if (!bottomRef.current || !firstPageLoaded) return;
 
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && !loading && hasNextPage) {
-          setPage(prev => prev + 1);
-        }
-      },
-      { rootMargin: "150px" }
-    );
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !loading && hasNextPage) {
+        setPage((prev) => prev + 1);
+      }
+    });
 
     observer.observe(bottomRef.current);
     return () => observer.disconnect();
@@ -100,7 +91,7 @@ function AnimePage({ searchTerm }: AnimePageProps) {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {animeList.map(anime => (
+        {animeList.map((anime) => (
           <Link
             key={anime.mal_id}
             to={`/anime/${anime.mal_id}`}

@@ -1,31 +1,22 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import background from "../assets/images/background.jpg";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaHome } from "react-icons/fa";
 import Sidebar from "./Sidebar";
+import { ROUTES } from "../routes";
 
 type LayoutProps = {
-  children: (data: { searchTerm: string }) => React.ReactNode;
+  children: React.ReactNode;
 };
 
 function Layout({ children }: LayoutProps) {
   const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
   const location = useLocation();
   const navigate = useNavigate();
-  const prevPath = useRef(location.pathname);
 
-  useEffect(() => {
-    const isDetailPage = location.pathname.startsWith("/anime");
-
-    const cameFromDetail = prevPath.current.startsWith("/anime");
-    prevPath.current = location.pathname;
-
-    if (searchTerm && isDetailPage && cameFromDetail) {
-      navigate("/");
-    }
-  }, [searchTerm, location.pathname, navigate]);
+  const isDetailPage = location.pathname.startsWith(
+    ROUTES.ANIME_DETAIL.replace(":id", "")
+  );
 
   return (
     <div
@@ -35,9 +26,7 @@ function Layout({ children }: LayoutProps) {
       }}
     >
       {!open && (
-        <div
-          className="fixed left-3 top-1/2 -translate-y-1/2 z-50"
-        >
+        <div className="fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4">
           <button
             onClick={() => setOpen(true)}
             className="bg-gray-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-700 transition-transform duration-300 hover:-translate-y-1 hover:scale-110 active:scale-90"
@@ -45,15 +34,20 @@ function Layout({ children }: LayoutProps) {
           >
             <FaSearch size={20} />
           </button>
+
+          {isDetailPage && (
+            <button
+              onClick={() => navigate(ROUTES.HOME)}
+              className="bg-gray-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-800 transition-transform duration-300 hover:-translate-y-1 hover:scale-110 active:scale-90"
+              title="Go Home"
+            >
+              <FaHome size={20} />
+            </button>
+          )}
         </div>
       )}
 
-      <Sidebar
-        open={open}
-        onClose={() => setOpen(false)}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <Sidebar open={open} onClose={() => setOpen(false)} />
 
       <div
         className={`relative z-10 max-h-screen p-6 transition-all duration-300 ${
@@ -61,7 +55,7 @@ function Layout({ children }: LayoutProps) {
         }`}
       >
         <div className="bg-white/70 border border-gray-300 rounded-lg p-6">
-          {children({ searchTerm })}
+          {children}
         </div>
       </div>
     </div>
