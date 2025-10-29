@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
+import { fetchAnimeDetail } from "../services/anime.service";
 
 type AnimeDetail = {
   mal_id: number;
@@ -21,38 +22,30 @@ function AnimeDetailPage() {
     const controller = new AbortController();
     const { signal } = controller;
 
-    let ignore = false; // ✅ prevents incorrect loading=false on abort
+    let ignore = false;
 
-    const fetchDetail = async () => {
+    const load = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`, {
-          signal,
-        });
-        const json = await res.json();
-
-        if (ignore) return; // ✅ ignore second unmount state update
-
-        if (!json.data) throw new Error("Anime not found");
-        setAnime(json.data);
+        const data = await fetchAnimeDetail(id, signal);
+        if (!ignore) setAnime(data);
       } catch (err: any) {
         if (!ignore && err.name !== "AbortError") {
           setError(err.message || "Unknown error");
         }
       } finally {
-        if (!ignore) setLoading(false); // ✅ only update if still mounted
+        if (!ignore) setLoading(false);
       }
     };
 
-    fetchDetail();
+    load();
 
     return () => {
-      ignore = true; // ✅ mark effect as invalid
+      ignore = true;
       controller.abort();
     };
   }, [id]);
 
-  // ✅ This will now show correctly
   if (loading && !anime) {
     return (
       <div className="flex justify-center items-center h-screen">

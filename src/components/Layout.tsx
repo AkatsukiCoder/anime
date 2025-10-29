@@ -38,7 +38,7 @@ function Layout({ children }: LayoutProps) {
           {isDetailPage && (
             <button
               onClick={() => navigate(ROUTES.HOME)}
-              className="bg-gray-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-800 transition-transform duration-300 hover:-translate-y-1 hover:scale-110 active:scale-90"
+              className="bg-gray-400 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-700 transition-transform duration-300 hover:-translate-y-1 hover:scale-110 active:scale-90"
               title="Go Home"
             >
               <FaHome size={20} />

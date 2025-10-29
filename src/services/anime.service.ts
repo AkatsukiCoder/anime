@@ -17,10 +17,21 @@ export async function fetchAnime(
     url += `&q=${encodeURIComponent(searchTerm)}`;
   }
 
-  const res = await fetch(url, { signal }); // ✅ attach signal here
+  const res = await fetch(url, { signal });
 
   if (!res.ok) throw new Error("Failed to fetch anime");
 
   const data: ApiResponse = await res.json();
   return data;
+}
+
+export async function fetchAnimeDetail(id: string, signal?: AbortSignal) {
+  const res = await fetch(`${API_DOMAIN}/v4/anime/${id}`, { signal });
+  const json = await res.json();
+
+  if (!json.data) {
+    throw new Error("Anime not found");
+  }
+
+  return json.data;
 }
